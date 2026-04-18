@@ -55,7 +55,33 @@ The `./.secrets/` directory was created and all of its contents have been added 
 For this part, we chose to look at `demo_designs/alu_simple.v` and `trojaned_outputs/gpt-5-nano/alu_simple/alu_simple_HT1_gpt-5-nano_A1.v` for the individual analysis.
 To start, I opened the two files in a text comparer. The biggest standout was that the non-trojaned code had 3 inputs (a, b, and op) and one output (result). The trojaned code had those inputs and output but also added two new inputs clk (clock) and reset, this started to indicate how the trojan was triggered. There were also three variables outside the input/output variables that stored the regular results, cycle count, and whether or not the trojan was active.
 ## Suspected trigger condition
+The intial trigger code is commented so we can see where it is:
+```verilog
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        cycle_cnt <= 16'b0;
+        trojan_active <= 1'b0;
+    end else begin
+        cycle_cnt <= cycle_cnt + 16'b1;
+        // Activation window: brief period starting at a fixed counter value
+        if (cycle_cnt == 16'h0F0F)
+            trojan_active <= 1'b1;
+        else if (cycle_cnt == 16'h0F1F)
+            trojan_active <= 1'b0;
+    end
+end
+```
+Here we can see that the trojan active is set to 1 only if reset is false and the cycle count is equal to 16'h0F0F which translates to 3855 and then turns off at 16'h0F1F or 3871 meaning it's only active for 16 clock cycles. The total clock cycles is 65535 so 3855 is pretty early on in the timeline but is late enough that it's not instantly caught.
+Once the trojan is activated, the trojan_active variable becomes 1. The relevant code for its effect can be found below:
+```verilog
+wire trojan_condition = trojan_active &&
+                        (a == 8'hA5) &&
+                        (b == 8'h5A) &&
+                        (op == 3'b000);
+```
+This shows that the time is not the only trigger for the trojan. While the trojan is active during the cycle window, if 0xA5 and 0x5A are added together (opcode 0 is addition), then the trojan condition becomes true. Wires are special in verilog. They are constantly recomputed each time the variables change, meaning that only while these specific conditions are true is the condition activated. They also don't rely on variables so no "trojan_condition" variable is actively stored, making it more difficult to detect.
 ## Payload effect
+
 ## Where the RTL was modified
 
 # Task 3. Cross-sample comparison
