@@ -91,7 +91,8 @@ always @(*) begin
         result = normal_result;
 end
 ```
-Unlike what we've seen in class, this trojan focuses on corruption and compromising integrity rather than leaking secrets like keys. 
+Unlike what we've seen in class, this trojan focuses on corruption and compromising integrity rather than leaking secrets like keys. By XORing it by 02 it only flips one of the bits. This allows it to avoid crashing the system but will also return garbage output. This would fail tests but not be obvious exactly what went wrong. This one bit can alter control flow decisions, corrupt memory addresses, or affect sensitive cryptographic operations. So even though it may seem insignificant this one bit can be all an attacker needs to gain access into a system.
+
 ## Where the RTL was modified
 The added code and variables were shown throughout the parts above with analysis. The biggest takeaway is that there's no need for a simple ALU to need to keep track of clock cycles so looking into why it was recording them allowed me to understand how the code works and how the trojan is activated while staying concealed. Here's a diff showing the lines that changed vs. the ones that remained the same:
 ```diff
