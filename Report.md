@@ -81,7 +81,7 @@ wire trojan_condition = trojan_active &&
 ```
 This shows that the time is not the only trigger for the trojan. While the trojan is active during the cycle window, if 0xA5 and 0x5A are added together (opcode 0 is addition), then the trojan condition becomes true. Wires are special in verilog. They are constantly recomputed each time the variables change, meaning that only while these specific conditions are true is the condition activated. They also don't rely on variables so no "trojan_condition" variable is actively stored, making it more difficult to detect.
 ## Payload effect
-
+The payload
 ## Where the RTL was modified
 
 # Task 3. Cross-sample comparison
