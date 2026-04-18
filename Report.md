@@ -55,6 +55,7 @@ The `./.secrets/` directory was created and all of its contents have been added 
 ## Suspected trigger condition
 ## Payload effect
 ## Where the RTL was modified
+For this part, we chose to look at `demo_designs/alu_simple.v` and `trojaned_outputs/gpt-5-nano/alu_simple/alu_simple_HT1_gpt-5-nano_A1.v` for the individual analysis.
 
 # Task 3. Cross-sample comparison
 
