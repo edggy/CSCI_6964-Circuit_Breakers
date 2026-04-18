@@ -52,10 +52,11 @@ those registers do not affect the module’s real outputs.
 The `./.secrets/` directory was created and all of its contents have been added to the `.gitignore` file.
 
 # Task 2. Single-sample analysis
+For this part, we chose to look at `demo_designs/alu_simple.v` and `trojaned_outputs/gpt-5-nano/alu_simple/alu_simple_HT1_gpt-5-nano_A1.v` for the individual analysis.
+To start, I opened the two files in a text comparer. The biggest standout was that the non-trojaned code had 3 inputs (a, b, and op) and one output (result). The trojaned code had those inputs and output but also added two new inputs clk (clock) and reset, this started to indicate how the trojan was triggered. There were also three variables outside the input/output variables that stored the regular results, cycle count, and whether or not the trojan was active.
 ## Suspected trigger condition
 ## Payload effect
 ## Where the RTL was modified
-For this part, we chose to look at `demo_designs/alu_simple.v` and `trojaned_outputs/gpt-5-nano/alu_simple/alu_simple_HT1_gpt-5-nano_A1.v` for the individual analysis.
 
 # Task 3. Cross-sample comparison
 
