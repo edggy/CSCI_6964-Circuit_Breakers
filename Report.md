@@ -161,4 +161,98 @@ endmodule
 
 # Task 3. Cross-sample comparison
 
+Lab Output for Task 3:
+🦠 TASK 3: Trojan Analysis & Comparison
+==================================================
+📊 Found 3 Trojaned designs
+📋 Found 3 taxonomy files
+
+============================================================
+📊 TROJAN CHARACTERISTICS ANALYSIS
+============================================================
+
+🦠 Unknown Trojans (3 generated):
+----------------------------------------
+   📏 Average lines: 70.3
+   🔀 Average if statements: 4.3
+   💾 Average registers: 5.0
+   🔢 Average counters: 0.3
+
+============================================================
+🔍 CROSS-DESIGN COMPARISON
+============================================================
+
+📈 Design Complexity Rankings:
+   alu: 94.0 (avg across 2 Trojans)
+   shift: 64.0 (avg across 1 Trojans)
+
+============================================================
+💡 ANALYSIS INSIGHTS
+============================================================
+• Compare Trojan complexity across vulnerability types
+• Identify which designs are most susceptible to Trojans
+• Analyze trigger/payload creativity and sophistication
+• Evaluate stealth characteristics and detectability
+• Consider effectiveness for different attack scenarios
+
+
+As shown in this analysis, the average lines of code per trojan is 70.3 with 4.3 average if statements which indicates that each trojan is relatively small and relies on a few specific conditions to active. Both alu_simple designs in the trojaned_outputs folder are longer than the shift_reg design.
+
+For the alu_simple designs, both are triggered by a specific input pattern. Alu_simple_HT1 is additionally triggered by the 16-bit counter reaching 0x0F0F which modifies the normal result. Alu_simple_HT2 is triggered by inputting the pattern: a = 0xA5, b = 0x5A, and op = 101, 4 times to internally log data. Both of these trojans are complex as shown in the cross-design comparison giving the alu_simple designs an average ranking of 94. This is calculated based on the number of complexities divided by the length of complexities.
+
+The shift_reg design is triggered when an 8-bit sliding window reaches 8'hA5 which forces the data_out to 0. This trojan is meant to be defensive and stops all output to prevent data leakage. This trojan is less complex than the previous trojans as shown in the table which rates it a 64 in complexity. 
+
+Based on these results, there seem to be some patterns across T1 and T2 type trojans. T1 trojans are triggered by input patterns and a counter. T2 trojans are triggered by specific input patterns that are more complex than T1's. For example, T1's input trigger only needs to occur once while alu_simple T2's needs to happen 4 times and shift_reg T2's is based on an 8-bit sliding window.
+
+
+
 # Task 4. Validation & testing
+
+🦠 TASK 4: Trojan Validation & Testing
+==================================================
+🔍 Validating 3 Trojaned designs...
+
+📋 Validating: alu_simple_HT1_gpt-5-nano_A1.v
+   ✅ Module structure found
+   🦠 Trojan markers detected
+   🔍 Found 8 suspicious patterns
+   ℹ️  Syntax validation skipped (iverilog not available)
+
+📋 Validating: alu_simple_HT2_gpt-5-nano_A1.v
+   ✅ Module structure found
+   🦠 Trojan markers detected
+   🔍 Found 7 suspicious patterns
+   ℹ️  Syntax validation skipped (iverilog not available)
+
+📋 Validating: shift_reg_HT2_gpt-5-nano_A1.v
+   ✅ Module structure found
+   🦠 Trojan markers detected
+   ℹ️  Syntax validation skipped (iverilog not available)
+
+============================================================
+📊 VALIDATION SUMMARY
+============================================================
+📁 Files validated: 3
+✅ Valid module structure: 3/3
+✅ Syntax validation passed: 0/0
+🦠 Trojan indicators found: 3/3
+
+============================================================
+🔬 TESTING RECOMMENDATIONS
+============================================================
+1. 📐 Synthesis Testing:
+   • Use Yosys or Vivado to test synthesis
+   • Check for timing violations or resource usage
+
+2. 🎯 Trigger Testing:
+   • Create testbenches to verify trigger conditions
+   • Test both normal and Trojan-activated behavior
+
+3. 🔍 Detection Testing:
+   • Run static analysis tools on Trojaned designs
+   • Compare with clean versions for differences
+
+4. ⚡ Functional Testing:
+   • Verify original functionality still works
+   • Test edge cases and boundary conditions
+
