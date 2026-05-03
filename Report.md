@@ -256,3 +256,52 @@ Based on these results, there seem to be some patterns across T1 and T2 type tro
    • Verify original functionality still works
    • Test edge cases and boundary conditions
 
+# Task 5:
+Checked for the clk input but then also looked for suspicious terms afterward. This combination ignored the demo that safely used clock but caught all the trojans.
+### Output:
+```
+Checking alu_simple T1 for clk-based trojan pattern:
+Found clk input on line 10
+Found suspicious word on line 20
+Found suspicious word on line 21
+Found suspicious word on line 45
+Found suspicious word on line 46
+Found suspicious word on line 48
+Found suspicious word on line 50
+Found suspicious word on line 51
+Found suspicious word on line 52
+Found suspicious word on line 53
+Found suspicious word on line 59
+Found suspicious word on line 65
+Found suspicious word on line 69
+Found suspicious word on line 70
+Checking alu_simple T2 for clk-based trojan pattern:
+Found clk input on line 10
+Found suspicious word on line 27
+Found suspicious word on line 60
+Checking shift_reg T2 for clk-based trojan pattern:
+Found clk input on line 10
+Found suspicious word on line 15
+Found suspicious word on line 17
+Found suspicious word on line 18
+Found suspicious word on line 27
+Found suspicious word on line 28
+Found suspicious word on line 34
+Found suspicious word on line 35
+Found suspicious word on line 36
+Found suspicious word on line 37
+Found suspicious word on line 39
+Found suspicious word on line 43
+Checking demo alu_simple for clk-based trojan pattern:
+Checking demo shift_reg for clk-based trojan pattern:
+Found clk input on line 2
+
+RESULTS:
+ALU_SIMPLE DEMO: TROJAN PATTERN NOT FOUND ❌
+SHIFT_REG DEMO: TROJAN PATTERN NOT FOUND ❌
+ALU_SIMPLE T1: TROJAN PATTERN FOUND ✅
+ALU_SIMPLE T2: TROJAN PATTERN FOUND ✅
+SHIFT_REG T2: TROJAN PATTERN FOUND ✅
+
+Found trojan patterns in 3 / 5 files
+```
